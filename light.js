@@ -1,6 +1,7 @@
 var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
 var GPIO_ENV = process.env.GPIO_NO;
 var ROOM = process.env.ROOM;
+var PORT = process.env.VLC_PORT;
 var LED = new Gpio(GPIO_ENV, 'out'); //use GPIO pin 23 (GPIO 23), and specify that it is output
 
 var express = require('express');
@@ -23,7 +24,7 @@ app.get('/lightStatus', function(req, res) {
   res.send(answer);
 })
 
-var server = app.listen(5555, function(req, res) {
+var server = app.listen(PORT, function(req, res) {
   var port = server.address().port;
   console.log("Light Controller for " + ROOM + " is listening at port %s", port)
 })
