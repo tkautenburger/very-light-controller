@@ -1,6 +1,7 @@
 var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
-var LED = new Gpio(23, 'out'); //use GPIO pin 23 (GPIO 23), and specify that it is output
-var ROOM = "Room-1";
+var GPIO_ENV = process.env.GPIO_NO;
+var ROOM = process.env.ROOM;
+var LED = new Gpio(GPIO_ENV, 'out'); //use GPIO pin 23 (GPIO 23), and specify that it is output
 
 var express = require('express');
 var app = express();
