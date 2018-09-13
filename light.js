@@ -1,7 +1,9 @@
 var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
+var fs = require('fs');
 var GPIO_ENV = process.env.GPIO_NO;
 var ROOM = process.env.ROOM;
 var PORT = process.env.VLC_PORT;
+var CONFIG_PATH = process.env.CONFIG_PATH;
 var LED = new Gpio(GPIO_ENV, 'out'); //use GPIO pin 23 (GPIO 23), and specify that it is output
 
 var express = require('express');
@@ -26,7 +28,13 @@ app.get('/lightStatus', function(req, res) {
 
 var server = app.listen(PORT, function(req, res) {
   var port = server.address().port;
-  console.log("Light Controller for " + ROOM + " is listening at port %s", port)
+  console.log("Light Controller for " + ROOM + " is listening at port %s", port);
+  var status = readConfig();
+  if (status == 0) {
+    lightOff();
+  } else if (status == 1) {
+    lightOn();
+  }  
 })
 
 function unexportOnClose() { //function to stop blinking
@@ -38,12 +46,14 @@ function unexportOnClose() { //function to stop blinking
 function lightOn() {
   if (LED.readSync() == 0) {
     LED.writeSync(1);
+    writeConfig(1);
   }
 }
 
 function lightOff() {
   if (LED.readSync() == 1) {
     LED.writeSync(0);
+    writeConfig(0);
   }
 }
 
@@ -57,5 +67,21 @@ function lightStatus() {
   return state;
 }
 
+function writeConfig(status) {
+  var statusObj = new Object();
+  statusObj.status = status;
+  fs.writefileSync(CONFIG_PATH + ROOM + ".txt", JSON.stringify(statusObj));
+}
+
+function readConfig() {
+  var filename = CONFIG_PATH + ROOM + ".txt";
+  if (fs.existsAync(filename)) {
+    var config = require(filename);
+    var status = config.status;
+    return status;
+  }
+  return -1;
+}
+
 process.on('SIGINT', unexportOnClose); // function to run when user closes with ctrl+c
-process.on('SIGTERM', unexportOnClose); // function to run when process gets KILL signal
+process.on('SIGTERM', unexportOnClose); // function to run when process gets TERM signal
