@@ -70,15 +70,15 @@ function lightStatus() {
 function writeConfig(status) {
   var statusObj = new Object();
   statusObj.status = status;
-  fs.writefileSync(CONFIG_PATH + ROOM + ".txt", JSON.stringify(statusObj));
+  fs.writeFileSync(CONFIG_PATH + ROOM + ".txt", JSON.stringify(statusObj));
 }
 
 function readConfig() {
   var filename = CONFIG_PATH + ROOM + ".txt";
-  if (fs.existsAync(filename)) {
-    var config = require(filename);
-    var status = config.status;
-    return status;
+  if (fs.existsSync(filename)) {
+    let rawdata = fs.readFileSync(filename);
+    let config = JSON.parse(rawdata);
+    return config.status;
   }
   return -1;
 }
