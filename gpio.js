@@ -91,6 +91,7 @@ app.get('/gpioInit', function(req, res) {
 
 var server = app.listen(PORT, function(req, res) {
   var port = server.address().port;
+  gpioAllInit();
   console.log("GPIO Controller is listening at port %s", port);
 })
 
@@ -128,6 +129,27 @@ function gpioStatus(gpio) {
 
 function gpioInit(pin, direction) {
   return new Gpio(pin, direction);
+}
+
+
+function gpioAllInit() {
+ let gpio1 = gpioInit(23, 'out');
+ let gpioObj1 = new Object();
+ gpioObj1.pin = 23;
+ gpioObj1.gpio = gpio1;
+ GPIOs.push(gpioObj1);
+
+ let gpio2 = gpioInit(24, 'out');
+ let gpioObj2 = new Object();
+ gpioObj2.pin = 24;
+ gpioObj2.gpio = gpio2;
+ GPIOs.push(gpioObj2);
+
+ let gpio3 = gpioInit(25, 'out');
+ let gpioObj3 = new Object();
+ gpioObj3.pin = 25;
+ gpioObj3.gpio = gpio3;
+ GPIOs.push(gpioObj3);
 }
 
 
