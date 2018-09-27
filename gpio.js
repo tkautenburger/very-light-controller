@@ -15,8 +15,23 @@ app.get('/gpioHigh', function(req, res) {
     if (result == undefined) {
       obj.status = -1;
     } else {
-      gpioHigh(result.gpio);
-      obj.status = gpioStatus(result.gpio);
+      let pinIn = crossCheck(pin);
+      if (pinIn != -1) {
+        const checkGpio = GPIOs.find(element => element.pin == pinIn);
+        if (checkGpio == undefined) {
+          obj.status = -1;
+        } else {
+          let checkState = gpioStatus(checkGpio.gpio);
+          if (checkState == 0) {
+            gpioHigh(result.gpio);
+            obj.status = gpioStatus(result.gpio);
+          } else {
+            obj.status = 1;
+          }
+        }  
+      } else {
+        obj.status = -1;
+      }    
     }  
   } else {
     obj.status = -1;
@@ -35,8 +50,23 @@ app.get('/gpioLow', function(req, res) {
     if (result == undefined) {
       obj.status = -1;
     } else {
-      gpioLow(result.gpio);
-      obj.status = gpioStatus(result.gpio);
+      let pinIn = crossCheck(pin);
+      if (pinIn != -1) {
+        const checkGpio = GPIOs.find(element => element.pin == pinIn);
+        if (checkGpio == undefined) {
+          obj.status = -1;
+        } else {
+          let checkState = gpioStatus(checkGpio.gpio);
+          if (checkState == 1) {
+            gpioLow(result.gpio);
+            obj.status = gpioStatus(result.gpio);
+          } else {
+            obj.status = 0;
+          }  
+        }  
+      } else {
+        obj.status = -1;
+      }    
     }  
   } else {
     obj.status = -1;
@@ -55,8 +85,18 @@ app.get('/gpioStatus', function(req, res) {
     if (result == undefined) {
       obj.status = -1;
     } else {
-      obj.status = gpioStatus(result.gpio);
-    }  
+      let pinIn = crossCheck(pin);
+      if (pinIn != -1) {
+        const checkGpio = GPIOs.find(element => element.pin == pinIn);
+        if (checkGpio == undefined) {
+          obj.status = -1;
+        } else {
+          obj.status = gpioStatus(checkGpio.gpio);
+        }  
+      } else {
+        obj.status = -1;
+      }    
+    }    
   } else {
     obj.status = -1;
   }
@@ -132,24 +172,46 @@ function gpioInit(pin, direction) {
 }
 
 
+function crossCheck(pinOut) {
+  if (pinOut = 23)
+  	return 26;
+  if (pinOut = 24)
+  	return 19;
+  if (pinOut = 25)
+  	return 13;
+  return -1;
+}
+
 function gpioAllInit() {
- let gpio1 = gpioInit(23, 'out');
- let gpioObj1 = new Object();
- gpioObj1.pin = 23;
- gpioObj1.gpio = gpio1;
- GPIOs.push(gpioObj1);
+ let gpioObj1out = new Object();
+ gpioObj1out.pin = 23;
+ gpioObj1out.gpio = gpioInit(23, 'out');
+ GPIOs.push(gpioObj1out);
 
- let gpio2 = gpioInit(24, 'out');
- let gpioObj2 = new Object();
- gpioObj2.pin = 24;
- gpioObj2.gpio = gpio2;
- GPIOs.push(gpioObj2);
+ let gpioObj2out = new Object();
+ gpioObj2out.pin = 24;
+ gpioObj2out.gpio = gpioInit(24, 'out');
+ GPIOs.push(gpioObj2out);
 
- let gpio3 = gpioInit(25, 'out');
- let gpioObj3 = new Object();
- gpioObj3.pin = 25;
- gpioObj3.gpio = gpio3;
- GPIOs.push(gpioObj3);
+ let gpioObj3out = new Object();
+ gpioObj3out.pin = 25;
+ gpioObj3out.gpio = gpioInit(25, 'out');
+ GPIOs.push(gpioObj3out);
+ 
+ let gpioObj1in = new Object();
+ gpioObj1in.pin = 26;
+ gpioObj1in.gpio = gpioInit(26, 'in');
+ GPIOs.push(gpioObj1in);
+
+ let gpioObj2in = new Object();
+ gpioObj2in.pin = 19;
+ gpioObj2in.gpio = gpioInit(19, 'in');
+ GPIOs.push(gpioObj2in);
+
+ let gpioObj3in = new Object();
+ gpioObj3in.pin = 13;
+ gpioObj3in.gpio = gpioInit(13, 'in');
+ GPIOs.push(gpioObj3in);
 }
 
 
